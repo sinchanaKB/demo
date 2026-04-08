@@ -1,45 +1,39 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+name: Build Dockerized Flask App
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
-
-permissions:
-  contents: read
+    branches: ["master"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-    - name: Run python file
-      run: |
-        python mathlib.py
-        pip install flake8 pytest
-    #     if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    # - name: Lint with flake8
-    #   run: |
-    #     # stop the build if there are Python syntax errors or undefined names
-    #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-    #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-         python app.py
-         steps:
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
 
-    - name: run docker compose file
-      run: docker compose up
+    steps:
+      # 1. Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Docker Buildx (required for Docker build)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3. Build the Docker image
+      - name: Build Docker image
+        run: docker build . --file Dockerfile --tag my-flask-app:latest
+
+      # 4. Run Docker Compose
+      - name: Run Docker Compose
+        run: docker compose up -d
+
+      # 5. Wait a few seconds for container to start
+      - name: Wait for container
+        run: sleep 5
+
+      # 6. Verify Docker container is running
+      - name: Check running containers
+        run: docker ps
