@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    environment:
+      # Connects directly to your host's SQL Express using host.docker.internal
+      - DB_SERVER=host.docker.internal\SQLEXPRESS
+      - DB_NAME=employee
+      - DB_USER=sa
+      - DB_PASS=StrongPassword@123  # CHANGE THIS TO YOUR ACTUAL PASSWORD
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
